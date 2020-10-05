@@ -1,0 +1,1 @@
+Block.init=i=>{},SoSIE.register("Block");
