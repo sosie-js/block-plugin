@@ -5,11 +5,13 @@
 
 ### Block init helper
 
--Provides Block.init() that allow to get position of current selected and go to a block by its position.
+-Provides Block.init() that allow to get position of current selected
 
 ### Position Panel in SoSIE
 
 ![](block_position_panel.png)
+
+Left button allows to go to a block by its position, and then the [current position] / [total blocks]
 
 ## Dependencies
 
