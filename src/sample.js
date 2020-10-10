@@ -19,17 +19,14 @@ function sampleBlock(editor) {
         
         
         /**
-        * Open Menu button
+        *  Position Panel 
         */
         editor.sosie.addMenuIconBtn({   
             icon:'bars',
             id:'gotoPosition',
             title:'Goto',
             text:'',
-            onClick: [function (evt) {
-                this.firstChild.lastChild.click();//Triggers input file defined in custom.input below
-                evt.stopPropagation();
-            },false],
+            onClick: [function(evt){ var edt=editor; return gotoBlockPosition()}, false],
             custom: [
                 {
                     input: {
@@ -59,9 +56,6 @@ function sampleBlock(editor) {
             ]
         });
         
-        //Listeners on each block to determine the position on which block has been clicked
-        initBlocksPositionListeners();
-        refreshTotalBlocks();
     }
 }
 
