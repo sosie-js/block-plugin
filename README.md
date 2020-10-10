@@ -1,6 +1,6 @@
 ![](https://badgen.net/badge/SoS正/0.7.0/f2a) ![](https://badgen.net/badge/editor.js/v2.1.8/blue) ![](https://badgen.net/badge/plugin/v1.0.0/orange) 
 
-# Block Plugin to get position of blocks in editor.js and sample of integration with Position Panel in SOSIE
+# Block Plugin to get position of blocks in editor.js and sample of integration with Position Panel in SoSIE
 
 ## Feature(s)
 
