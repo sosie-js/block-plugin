@@ -13,7 +13,7 @@ Provides Block.init() to see position of current selected and go to a block by i
 
 Add a line in  either your example.html, after the script-loader line in the loadPlugins section
 
-```html
+```js
 	/**
         * Plugins
         */
