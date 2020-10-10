@@ -6,7 +6,8 @@
 
 ### Block init helper
 
-Provides Block.init() to see position of current selected and go to a block by its position
+-Provides Block.init() that allow to get position of current selected and go to a block by its position.
+Requires both editorjs-undo with Big Brother feature and [Undo Plugin initialization Plugin](https://github.com/sosie-js/undo-plugin)
 
  
 ## Integration
