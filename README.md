@@ -14,13 +14,13 @@ Provides Block.init() to see position of current selected and go to a block by i
 Add a line in  either your example.html, after the script-loader line in the loadPlugins section
 
 ```javascript
-	/**
-        * Plugins
-        */
-         await loadPlugins([
-            {'sosie-js/script-loader@3.0.0': '[example/plugins/script-loader](https://github.com/sosie-js/script-loader)'}, //virtual , already loaded we keep a version trace here
-            {'sosie-js/block-plugin@1.0.0': ['[example/plugins/view-plugin](https://github.com/sosie-js/view-plugin)',['dist/bundle.js','dist/sample.js']]}
-        ],nocache,mode,target);
+/**
+* Plugins
+*/
+    await loadPlugins([
+    {'sosie-js/script-loader@3.0.0': '[example/plugins/script-loader](https://github.com/sosie-js/script-loader)'}, //virtual , already loaded we keep a version trace here
+    {'sosie-js/block-plugin@1.0.0': ['[example/plugins/view-plugin](https://github.com/sosie-js/view-plugin)',['dist/bundle.js','dist/sample.js']]}
+],nocache,mode,target);
 ```
 
 ## Building the plugin
