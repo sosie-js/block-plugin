@@ -9,7 +9,7 @@
 
 ### Position Panel in SoSIE
 
-![](file-panel.png)
+![](block_position_panel.png)
 
 ## Dependencies
 
