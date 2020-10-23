@@ -1,4 +1,4 @@
-![](https://badgen.net/badge/SoS正/0.7.0/f2a) ![](https://badgen.net/badge/editor.js/v2.1.8/blue) ![](https://badgen.net/badge/plugin/v2.0.0/orange) 
+![](https://badgen.net/badge/SoS正/0.7.0/f2a) ![](https://badgen.net/badge/editor.js/v2.1.8/blue) ![](https://badgen.net/badge/plugin/v3.0.0/orange) 
 
 # Block Plugin to get position of blocks in editor.js and sample of integration with SoSIE 
 
@@ -6,6 +6,7 @@
 
 - 1.0.0  allow to get position of any block 
 - 2.0.0  caret position and inject support
+- 3.0.0  scrollToBlock fixed, sync works, add/remove block still buggy, packaging added
 
 ## Feature(s)
 

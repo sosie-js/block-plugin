@@ -26,7 +26,7 @@ function sampleBlock(editor) {
             id:'gotoPosition',
             title:'Goto',
             text:'',
-            onClick: [function(evt){ var edt=editor; return gotoBlockPosition()}, false],
+            onClick: [function(evt){ return gotoBlockPosition()}, false],
             custom: [
                 {
                     input: {
@@ -55,7 +55,7 @@ function sampleBlock(editor) {
                 }
             ]
         });
-        
+
     }
 }
 
