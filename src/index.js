@@ -1,17 +1,21 @@
+/*!
+*  Block position tracking plugin
+* 
+*  @version 3.0.0
+*  @package https://github.com/sosie-js/block-plugin
+*/
+
 /**
-* Block position tracking plugin
-*
 * @Note this has to be triggered after await editor.isReady
 * @author sosie / sos-productions.com
 * @see remark in issue https://github.com/codex-team/editor.js/issues/1258
-* @version 3.0
 * @history
-*    1.0 (05.10.2020) - Initial version from SoSIE
-*    2.0 (09.10.2020) - Refactoring init(editor) , add/remove BlocksPositionListeners works
-*    3.0 (14.10.2020) - initCaretManager added os saving, restoring caret position for injections works
+*    1.0.0 (05.10.2020) - Initial version from SoSIE
+*    2.0.0 (09.10.2020) - Refactoring init(editor) , add/remove BlocksPositionListeners works
+*    2.1.0 (14.10.2020) - initCaretManager added os saving, restoring caret position for injections works
+*    3.0.0 (22.10.2020) - scrollToBlock fixed, packaging added
 * @property {Object} editor - Editor.js API 
 **/
-
 
 /**
  * Block position retrieval and changes tracking for Editor.js.
@@ -48,39 +52,42 @@ class BlockPlugin {
                 return getBlocksDom(edom);
             }
             
-            editor.blocks.scrollToBlock=function(n,v) {
-                    var blocks=getEditorBlocks();
-                    if(n<blocks.length) {
-                        if(v>0) {
-                            window.scrollTo(0,blocks[n].offsetTop-v);
-                        }else {
-                            blocks[n].scrollIntoView(true);
-                        }
-                    }
+            editor.blocks.scrollToBlock=function(n,h) {
+                var blocks=getEditorBlocks();
+                if(n<blocks.length) {
+                
+                  // put the block on the top of the viewport
+                  //  var viewPortHeight = document.documentElement.clientHeight || document.body.clientHeight;
+                    blocks[n].scrollIntoView(true);
+                        
+                    //Sync scroll   
+                    window.scrollBy(0,-h);
+                }
             }; 
             
             window.gotoBlockPosition=function() {
                 let pos = prompt("Go to position","1");
-                var e='Invalid Position, it must be in integer from 1 to '+editor.blocks.getBlocksCount();
+                var er='Invalid position'+pos +', it must be in integer from 1 to '+editor.blocks.getBlocksCount();
                 try {
                     var n,p=parseInt(pos);
                     if(p>0) {    
                         n=p-1;
-                        /*const edom=window.document.getElementById('editorjs');
-                        let blocks=edom.firstChild.firstChild.children;
-                        blocks[n].scrollIntoView(true); 
-                        blocks[n].focus();*/
-                        //editor.blocks.scrollToBlock(n,0);
-                        editor.caret.setToBlock(n, 'start');
+                     
+                        //let blocks=getEditorBlocks();
+                        editor.blocks.scrollToBlock(n,0);
+                        
+                        //blocks[n].focus();
+                        
+                        //editor.caret.setToBlock(n, 'start');
                         
                         setCurrentPosition(p);
                         refreshTotalBlocks();
                         
                     }else {
-                        alert(e);
+                        alert(er);
                     }
-                } catch {
-                    alert(e);
+                } catch(e){
+                    alert('gotoBlockPosition error:'+e);
                 }
                 
             }
@@ -97,12 +104,23 @@ class BlockPlugin {
      *   editor.getBlocksNodeList = function() {
      *       let blocks=[], b, bMax=editor.blocks.getBlocksCount();
      *       for (b = 0; b < bMax ; b ++) {
-     *           blocks.push(editor.blocks.getBlockByIndex(b));
+     *           blocks.push(editor.blocks.getBlockByIndex(b).holder);
      *       }
      *       return blocks;
      *   }
      *  
      *  } BUT IT DOES NOT WORK with addEventListener
+     * 
+     *  initRedactor() {
+     *     const redactor=document.querySelectorAll('.codex-editor__redactor')[0]; 
+     *     // When a block has been clicked.
+     *     var addBlockClickListener = function(e){
+     *         alert(editor.blocks.getCurrentBlockIndex());
+     *     }
+     *     redactor.addEventListener('click', addBlockClickListener);
+     *   }
+     *  
+     * DOES NOT WORK WITH PARAGRAPH Blocks, FAILSAFE MODE
      * 
      * If you know a cleaner and faster way please inform me. - SoSIE
      *@note editor.getBlocksNodeList function will be available
@@ -122,8 +140,8 @@ class BlockPlugin {
             return blocks;
             
         }
+
     }
-    
     
   /**
     * Determines the position (index+1) of the given Block DOMElement
@@ -159,6 +177,9 @@ class BlockPlugin {
         var _this=this;
         var blockSelection=editor.clipboard.blockSelection;
         
+         //---- view-Plugin will handle these next ---
+        
+         // When a block has been clicked.
         var addBlockClickListener = function(e){
                     
                 var p=_this.getPosition(this);
@@ -166,16 +187,67 @@ class BlockPlugin {
                 //Update the panel
                 setCurrentPosition(p);
                 refreshTotalBlocks();
-            /*   if(p != '?') {
+                
+               if(p != '?') {
                     // broadcast message to others editors so they will synchronize on the same block's position
                     var rect=blocks[p-1].getBoundingClientRect();
+                    console.log('Broadcast in instance to be sent from block-plugin');
+                    
                     editor.broadcast.postMessage({
-                        action:'sync',
-                        position:p,
-                        y : rect.top
+                        action : 'sync',
+                        index : p-1,
+                        data: {
+                          y : rect.top
+                        }
                     });
-                }*/
+                }
         }
+        
+        // When a block has been inserted.
+        function insertOp(index, id) {
+            editor.broadcast.postMessage({
+                action : 'insert',
+                index : index,
+                data : {
+                  id : id
+                }
+            });
+        }
+        
+        // When a block has been removed from the editor
+        function removeOp(index, id) {
+            editor.broadcast.postMessage({
+                action : 'remove',
+                index : index,
+                data : {
+                  id : id
+                }
+            });
+        }
+        
+        //When a block has been edited.
+        function editOp(index, id) {
+            editor.broadcast.postMessage({
+                action : 'edit',
+                index : index,
+                data : {
+                  id : id
+                }
+            });
+        }
+        
+        //When a block changes its type
+        function replaceOp(index, id) {
+            editor.broadcast.postMessage({
+                action : 'replace',
+                index : index,
+                data : {
+                  id : id
+                }
+            });
+        }
+        
+        //------------------------------------------------------
         
         var addBlockMouseDownListener = function(e){
                 blockSelection.start=_this.getPosition(this);
@@ -245,26 +317,35 @@ class BlockPlugin {
         installBlocksPositionListeners(blocks);
         
         //Blocks Listener(s) may need to be upated on enter or remove,
-        //!NOTE requires the editorjs-Undo patch to work
+        //!NOTE requires the editorjs-Undo with BigBrother patch to work
         document.addEventListener('changeBlocks', function(evt){
             var changedSet=evt.detail.changed;
             changedSet.forEach(entry => {
-                //console.log('changeBlocks',entry);
+                console.log('changeBlocks',entry);
                 var block=entry.blockElement;
+                var blockIndex=_this.getPosition(block)-1;
                 var blockId=block.dataset.blockId;
-                var blockData= block.innerText ? [block.innerText] : block;
+              
                 switch(entry.changeType) {
                     case 'add':
-                        console.log('Block ('+blockId+') added', blockData);
+                        console.log('Block ('+blockId+') added at', blockIndex);
                         editor.blocks.addBlockPositionListeners(block);
+                        insertOp(blockIndex, blockId);
                     break;
                     case 'remove':
-                        console.log('Block ('+blockId+') removed', blockData);
+                        console.log('Block ('+blockId+') removed at ', blockIndex);
                         editor.blocks.delBlockPositionListeners(block);
+                        removeOp(blockIndex, blockId);
                     break;
                     case 'update':
                     default:
-                        console.log('Block ('+blockId+') updated', blockData);
+                      if(entry.mutType == 'attributes') {
+                        console.log('Block ('+blockId+') attributes updated at', blockIndex);
+                        replaceOp(blockIndex, blockId);
+                      } else {
+                        console.log('Block ('+blockId+') updated at', blockIndex);
+                        editOp(blockIndex ,blockId);
+                      }
                 }
             });
         });
@@ -319,14 +400,14 @@ class BlockPlugin {
       **/   
     initBlockStatutPositionPanel(editor) {
     
-        window.setCurrentPosition = function(value) {
+        window.setCurrentPosition = function(value,from) {
+            console.info('setCurrentPosition '+value +' from '+from);
             document.getElementById('currentPosition').value=value;
         }  
     
-        window.refreshCurrentPosition = function() {
+        window.refreshCurrentPosition = function(from) {
             var p=editor.blocks.getCurrentBlockIndex()+1;
-            console.warn("CURRENT POS",p);
-            setCurrentPosition(p);
+            setCurrentPosition(p,from|| 'refreshCurrentPosition');
         }
         
         
@@ -335,8 +416,8 @@ class BlockPlugin {
         }
         
         //Required by onChange
-        window.refreshBlocksStatusPanel = function() {
-            refreshCurrentPosition();
+        window.refreshBlocksStatusPanel = function(from) {
+            refreshCurrentPosition(from ||'refreshBlocksStatusPanel');
             refreshTotalBlocks();
         }
         
@@ -473,7 +554,7 @@ class BlockPlugin {
         // SoSIE menu bar specific 
         this.initBlockStatutPositionPanel(editor);
     
-        // Listeners on each block to determine the position on which block has been clicked and track changes add, remove and updates 
+        // Listeners on each block to determine the position on which block has been clicked and track changes add, remove and updates (this.initRedactor(); is buggy)
         this.initBlocksPositionListeners(editor);
         
         // primitives to set to a position /get caret from selection
